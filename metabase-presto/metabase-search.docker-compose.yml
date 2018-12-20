@@ -1,0 +1,50 @@
+version: "3"
+# See:
+#   
+#   https://www.metabase.com/docs/latest/operations-guide/running-metabase-on-docker.html
+#
+#   Using Presto because Athena not supported (as of Sept 2018 not on roadmap)
+#   https://github.com/metabase/metabase/issues/44181
+#
+services:
+  presto:
+    container_name: presto
+    image: jaskpresto.0.214
+    privileged: true
+    ports:
+        - "8080:8080"
+        - "2222:22"
+    volumes:
+        - ./presto/etc/jvm.config:/etc/presto/jvm.config
+        - ./presto/etc/config.properties:/etc/presto/config.properties
+        - ./presto/etc/node.properties:/etc/presto/node.properties
+        - ./presto/etc/catalog:/etc/presto/catalog
+        - ~/.aws:/root/.aws:ro
+
+  jaskmetabasepostgres:
+    container_name: jaskmetabasepostgres
+    image: postgres:latest
+    ports:
+        - "5432:5432"
+    environment:
+        - POSTGRES_USER=metabase
+        - POSTGRES_PASSWORD=PG86878713232878896GP
+  
+  metabase:
+    container_name: jaskmetabase
+    image: metabase/metabase:latest
+    links:
+        - jaskmetabasepostgres
+    ports:
+        - "3000:3000"
+    depends_on:
+        - jaskmetabasepostgres
+        - presto
+    environment:
+        - MB_DB_TYPE=postgres
+        - MB_DB_DBNAME=metabase
+        - MB_DB_PORT=5432
+        - MB_DB_USER=metabase
+        - MB_DB_PASS=PG86878713232878896GP
+        - MB_DB_HOST=jaskmetabasepostgres
+  

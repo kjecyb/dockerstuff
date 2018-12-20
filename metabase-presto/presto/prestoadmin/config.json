@@ -1,0 +1,8 @@
+{
+    "username":"root",
+    "coordinator":"localhost",
+    "workers":[
+        "localhost"
+    ],
+    "port":22
+}

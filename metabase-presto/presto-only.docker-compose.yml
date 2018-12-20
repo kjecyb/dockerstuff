@@ -1,0 +1,24 @@
+version: "3"
+# See:
+#   
+#   https://www.metabase.com/docs/latest/operations-guide/running-metabase-on-docker.html
+#
+#   Using Presto because Athena not supported (as of Sept 2018 not on roadmap)
+#   https://github.com/metabase/metabase/issues/44181
+#
+services:
+  presto:
+    container_name: presto
+    image: jaskpresto.0.214
+    privileged: true
+    ports:
+        - "8080:8080"
+        - "2222:22"
+    volumes:
+        - ./presto/etc/jvm.config:/etc/presto/jvm.config
+        - ./presto/etc/config.properties:/etc/presto/config.properties
+        - ./presto/etc/node.properties:/etc/presto/node.properties
+        - ./presto/etc/catalog:/etc/presto/catalog
+        - ~/.aws:/root/.aws:ro
+
+  
